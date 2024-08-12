@@ -3,8 +3,8 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { SerpAPI } from "@langchain/community/tools/serpapi";
-import { Calculator } from "@langchain/community/tools/calculator";
+// import { SerpAPI } from "@langchain/community/tools/serpapi";
+// import { Calculator } from "@langchain/community/tools/calculator";
 import {
   AIMessage,
   BaseMessage,
@@ -12,6 +12,7 @@ import {
   HumanMessage,
   SystemMessage,
 } from "@langchain/core/messages";
+import { boundingBoxesTool } from "@/app/tools/boundingBoxes";
 
 export const runtime = "edge";
 
@@ -39,7 +40,7 @@ const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
   }
 };
 
-const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
+const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Use tools to answer questions like what rows correspond to the state`;
 
 /**
  * This handler initializes and calls an tool caling ReAct agent.
@@ -64,9 +65,9 @@ export async function POST(req: NextRequest) {
 
     // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
     // You can remove this or use a different tool instead.
-    const tools = [new Calculator(), new SerpAPI()];
+    const tools = [ boundingBoxesTool]; //new Calculator(), new SerpAPI(),
     const chat = new ChatOpenAI({
-      model: "gpt-3.5-turbo-0125",
+      model: "gpt-4o",
       temperature: 0,
     });
 
